@@ -16,13 +16,13 @@ This tutorial is for who want to build an app that provides **server_to_server**
 
 5. Input required information and click `Continue` until your app will be activated. Don't forget to remember your credentials. It's used for API calling.
 
-![Build App](zoom_build_app_01.png)
+![Build App](./markdown/zoom_build_app_01.png)
 
-![JWT type](zoom_build_app_02.png)
+![JWT type](./markdown/zoom_build_app_02.png)
 
-![Create application](zoom_build_app_03.png)
+![Create application](./markdown/zoom_build_app_03.png)
 
-![Your app is activated](zoom_build_app_04.png)
+![Your app is activated](./markdown/zoom_build_app_04.png)
 
 ## Create Project
 

@@ -41,6 +41,36 @@ class MeetingController extends Controller
     }
 
     /**
+     * Return list of meetings.(for laravel 6.x users)
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function listForLaravel6(Request $request)
+    {
+        try {
+            $path = 'users/me/meetings';
+            $response = $this->zoomRequestForLaravel6('GET', $path);
+
+            $data = json_decode((string) $response->getBody(), true);
+            $data['meetings'] = array_map(function (&$m) {
+                $m['start_at'] = $this->toUnixTimeStamp($m['start_time'], $m['timezone']);
+                return $m;
+            }, $data['meetings']);
+
+            return [
+                'success' => $response->getStatusCode() === 200,
+                'data' => $data,
+            ];
+        } catch (\GuzzleHttp\Exception\GuzzleException $e) {
+            return [
+                'success' => false,
+                'data' => $e,
+            ];
+        }
+    }
+
+    /**
      * Create the meeting room.
      *
      * @param Request $request
@@ -80,6 +110,55 @@ class MeetingController extends Controller
             'success' => $response->status() === 201,
             'data' => json_decode($response->body(), true),
         ];
+    }
+
+    /**
+     * Create the meeting room.(for laravel 6.x users)
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function createForLaravel6(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'topic' => 'required|string',
+                'start_time' => 'required|date',
+                'agenda' => 'string|nullable',
+            ]);
+
+            if ($validator->fails()) {
+                return [
+                    'success' => false,
+                    'data' => $validator->errors(),
+                ];
+            }
+            $data = $validator->validated();
+
+            $path = 'users/me/meetings';
+            $response = $this->zoomRequestForLaravel6('POST', $path, [], [
+                'topic' => $data['topic'],
+                'type' => self::MEETING_TYPE_SCHEDULE,
+                'start_time' => $this->toZoomTimeFormat($data['start_time']),
+                'duration' => 30,
+                'agenda' => $data['agenda'],
+                'settings' => [
+                    'host_video' => false,
+                    'participant_video' => false,
+                    'waiting_room' => true,
+                ]
+            ]);
+
+            return [
+                'success' => $response->getStatusCode() === 201,
+                'data' => json_decode((string) $response->getBody(), true),
+            ];
+        } catch (\GuzzleHttp\Exception\GuzzleException $e) {
+            return [
+                'success' => false,
+                'data' => $e->getMessage(),
+            ];
+        }
     }
 
     /**

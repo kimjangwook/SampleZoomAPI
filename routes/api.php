@@ -19,3 +19,7 @@ Route::post('/meetings', 'Zoom\MeetingController@create');
 Route::get('/meetings/{id}', 'Zoom\MeetingController@get')->where('id', '[0-9]+');
 Route::patch('/meetings/{id}', 'Zoom\MeetingController@update')->where('id', '[0-9]+');
 Route::delete('/meetings/{id}', 'Zoom\MeetingController@delete')->where('id', '[0-9]+');
+
+
+Route::get('/tmp/meetings', 'Zoom\MeetingController@listForLaravel6');
+Route::post('/tmp/meetings', 'Zoom\MeetingController@createForLaravel6');

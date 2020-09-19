@@ -46,6 +46,36 @@ trait ZoomJWT
     }
 
     /**
+     * Generate Request using GuzzleHttp Library
+     *
+     * @param string $methods
+     * @param string $path
+     * @param array $query
+     * @param array $body
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function zoomRequestForLaravel6(string $methods, string $path, array $query = [], array $body = [])
+    {
+        $url = $this->retrieveZoomUrl() . $path;
+
+        $jwt = $this->generateZoomToken();
+        $headers = [
+            'authorization' => 'Bearer ' . $jwt,
+            'content-type' => 'application/json',
+        ];
+        $options = [
+            'headers' => $headers,
+            'query' => $query,
+            'json' => $body,
+            'verify' => false,
+        ];
+
+        $client = new \GuzzleHttp\Client();
+        return $client->request($methods, $url, $options);
+    }
+
+    /**
      * Generate GET request using path and query.
      *
      * @param string $path
